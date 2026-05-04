@@ -112,7 +112,7 @@ function PlateVideo() {
     }}>
       <video
         autoPlay loop muted playsInline
-        src="https://res.cloudinary.com/drfbiuokx/video/upload/plate-shatter_whxoug.mp4"
+        src="https://res.cloudinary.com/drfbiuokx/video/upload/fl_attachment:false/plate-shatter_whxoug.mp4"
         style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center" }}
       />
       <div style={{
