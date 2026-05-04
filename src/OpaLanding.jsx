@@ -1,3 +1,4 @@
+// v2
 import { useState, useEffect, useRef } from "react";
 
 const WHATSAPP_NUMBER = "972501234567"; // ← החלף במספר שלך
