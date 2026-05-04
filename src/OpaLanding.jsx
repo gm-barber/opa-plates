@@ -103,8 +103,8 @@ function Stars({ count = 60 }) {
 }
 
 function PlateVideo() {
-  const videoRef = React.useRef(null);
-  React.useEffect(() => {
+  const videoRef = useRef(null);
+  useEffect(() => {
     const v = videoRef.current;
     if (v) {
       v.muted = true;
