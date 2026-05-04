@@ -103,6 +103,14 @@ function Stars({ count = 60 }) {
 }
 
 function PlateVideo() {
+  const videoRef = useRef(null);
+  useEffect(() => {
+    const v = videoRef.current;
+    if (v) {
+      v.muted = true;
+      v.play().catch(() => {});
+    }
+  }, []);
   return (
     <div style={{
       position: "relative", width: 160, height: 160, margin: "0 auto",
@@ -110,11 +118,12 @@ function PlateVideo() {
       boxShadow: "0 0 40px rgba(212,168,67,0.35), 0 0 80px rgba(212,168,67,0.12)",
       border: "2px solid rgba(212,168,67,0.3)",
     }}>
-      <img
-        src="https://res.cloudinary.com/drfbiuokx/image/upload/v1777910434/plate-broken_cq2dqn.jpg"
-        alt="צלחת שבורה"
-        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%" }}
-      />
+      <video
+        ref={videoRef}
+        autoPlay loop muted playsInline preload="auto"
+        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center" }}>
+        <source src="https://res.cloudinary.com/drfbiuokx/video/upload/plate-shatter_whxoug.mp4" type="video/mp4" />
+      </video>
       <div style={{
         position: "absolute", inset: 0, borderRadius: "50%",
         background: "radial-gradient(circle, transparent 55%, rgba(212,168,67,0.18) 100%)",
