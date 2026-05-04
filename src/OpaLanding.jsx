@@ -111,10 +111,10 @@ function PlateVideo() {
       border: "2px solid rgba(212,168,67,0.3)",
     }}>
       <video
-        autoPlay loop muted playsInline
-        src="https://res.cloudinary.com/drfbiuokx/video/upload/fl_attachment:false/plate-shatter_whxoug.mp4"
-        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center" }}
-      />
+  autoPlay loop muted playsInline preload="auto"
+  style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center center" }}>
+  <source src="https://res.cloudinary.com/drfbiuokx/video/upload/plate-shatter_whxoug.mp4" type="video/mp4" />
+</video>
       <div style={{
         position: "absolute", inset: 0, borderRadius: "50%",
         background: "radial-gradient(circle, transparent 55%, rgba(212,168,67,0.18) 100%)",
