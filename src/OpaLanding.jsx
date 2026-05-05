@@ -312,10 +312,12 @@ export default function OpaLanding() {
   async function saveToSheets(data) {
     if (APPS_SCRIPT_URL==="YOUR_APPS_SCRIPT_URL_HERE") return;
     try {
+      const params = new URLSearchParams();
+      params.append("data", JSON.stringify(data));
       await fetch(APPS_SCRIPT_URL, {
         method:"POST", mode:"no-cors",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(data)
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body:params.toString()
       });
     } catch {}
   }
