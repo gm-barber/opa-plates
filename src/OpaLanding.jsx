@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 const WHATSAPP_NUMBER = "972556873811";
 const ADMIN_PASSWORD = "opa2024";
 // ← לאחר פריסת Apps Script, הכנס כאן את ה-URL:
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzp7pkyu4uTtzHIz4tTyna9wgnRFX_bnrBkAQqjU3zJuetsnJ5octSNvJfMJ68O1Ag/exec";
+const APPS_SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE";
 
 const B = "#1565C0"; const BD = "#0D47A1"; const BL = "#42A5F5";
 const BBG = "#E8F4FD"; const BBG2 = "#DCEEFB";
