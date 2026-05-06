@@ -179,17 +179,19 @@ function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onC
                 <div style={{fontSize:12,color:B,fontWeight:600}}>{o.pkg} — ₪{o.total}</div>
                 {o.address&&<div style={{fontSize:11,color:MUT}}>📍 {o.address}</div>}
               </div>
-              <div style={{display:"flex",flexDirection:"column",gap:6,alignItems:"flex-end"}}>
-                <select value={o.status||"חדשה"}
-                  onChange={e=>setOrders(prev=>prev.map(x=>x.rowId===o.rowId?{...x,status:e.target.value}:x))}
-                  style={{background:STATUS_COLORS[o.status]||B,color:W,border:"none",borderRadius:8,padding:"5px 10px",fontSize:12,cursor:"pointer",fontFamily:"'Heebo',sans-serif"}}>
-                  {ORDER_STATUSES.map(s=><option key={s} value={s} style={{background:W,color:TXT}}>{s}</option>)}
-                </select>
-                <button onClick={()=>confirmAndRemove(o.rowId)}
-                  style={{background:["שולמה ונמסרה","בוטלה"].includes(o.status)?"#C62828":GREEN,color:W,border:"none",borderRadius:7,padding:"5px 14px",fontSize:12,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
-                  ✓ ביצוע
-                </button>
-              </div>
+              <select value={o.status||"חדשה"}
+                onChange={e=>{
+                  const s=e.target.value;
+                  callScript({action:"updateStatus",rowId:o.rowId,status:s});
+                  if(s==="שולמה ונמסרה"||s==="בוטלה"){
+                    setOrders(prev=>prev.filter(x=>x.rowId!==o.rowId));
+                  } else {
+                    setOrders(prev=>prev.map(x=>x.rowId===o.rowId?{...x,status:s}:x));
+                  }
+                }}
+                style={{background:STATUS_COLORS[o.status]||B,color:W,border:"none",borderRadius:8,padding:"5px 10px",fontSize:12,cursor:"pointer",fontFamily:"'Heebo',sans-serif"}}>
+                {ORDER_STATUSES.map(s=><option key={s} value={s} style={{background:W,color:TXT}}>{s}</option>)}
+              </select>
             </div>
           </div>))}
         </div>)}
