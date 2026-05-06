@@ -64,8 +64,9 @@ function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onC
     setLoading(true);
     const data=await fetchScript({action:"getOrders"});
     if(Array.isArray(data)){
-      setOrders(data);
-      calcStats(data);
+      const active=data.filter(o=>!["שולמה ונמסרה","בוטלה"].includes(o.status));
+      setOrders(active);
+      calcStats(data); // stats on all data including completed
     }
     setLoading(false);
   }
@@ -82,16 +83,14 @@ function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onC
   }
 
   async function updateStatus(rowId,status){
-    if(status==="שולמה ונמסרה"||status==="בוטלה"){
-      // עדכן ויזואלית בלבד, אל תמחק עדיין
-      setOrders(prev=>prev.map(o=>o.rowId===rowId?{...o,status,pendingDelete:true}:o));
-    } else {
-      setOrders(prev=>prev.map(o=>o.rowId===rowId?{...o,status,pendingDelete:false}:o));
-    }
+    setOrders(prev=>prev.map(o=>o.rowId===rowId?{...o,status}:o));
     await callScript({action:"updateStatus",rowId,status});
   }
 
-  async function confirmDelete(rowId){
+  function confirmAndRemove(rowId){
+    const order=orders.find(o=>o.rowId===rowId);
+    if(!order)return;
+    updateStatus(rowId,order.status);
     setOrders(prev=>prev.filter(o=>o.rowId!==rowId));
   }
 
@@ -181,16 +180,15 @@ function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onC
                 {o.address&&<div style={{fontSize:11,color:MUT}}>📍 {o.address}</div>}
               </div>
               <div style={{display:"flex",flexDirection:"column",gap:6,alignItems:"flex-end"}}>
-                <select value={o.status||"חדשה"} onChange={e=>updateStatus(o.rowId,e.target.value)}
+                <select value={o.status||"חדשה"}
+                  onChange={e=>setOrders(prev=>prev.map(x=>x.rowId===o.rowId?{...x,status:e.target.value}:x))}
                   style={{background:STATUS_COLORS[o.status]||B,color:W,border:"none",borderRadius:8,padding:"5px 10px",fontSize:12,cursor:"pointer",fontFamily:"'Heebo',sans-serif"}}>
                   {ORDER_STATUSES.map(s=><option key={s} value={s} style={{background:W,color:TXT}}>{s}</option>)}
                 </select>
-                {o.pendingDelete&&(
-                  <button onClick={()=>confirmDelete(o.rowId)}
-                    style={{background:"#C62828",color:W,border:"none",borderRadius:7,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
-                    ✓ בצע ומחק
-                  </button>
-                )}
+                <button onClick={()=>confirmAndRemove(o.rowId)}
+                  style={{background:["שולמה ונמסרה","בוטלה"].includes(o.status)?"#C62828":GREEN,color:W,border:"none",borderRadius:7,padding:"5px 14px",fontSize:12,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
+                  ✓ ביצוע
+                </button>
               </div>
             </div>
           </div>))}
