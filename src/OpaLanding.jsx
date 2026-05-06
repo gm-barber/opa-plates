@@ -82,12 +82,17 @@ function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onC
   }
 
   async function updateStatus(rowId,status){
-    await callScript({action:"updateStatus",rowId,status});
     if(status==="שולמה ונמסרה"||status==="בוטלה"){
-      setOrders(prev=>prev.filter(o=>o.rowId!==rowId));
+      // עדכן ויזואלית בלבד, אל תמחק עדיין
+      setOrders(prev=>prev.map(o=>o.rowId===rowId?{...o,status,pendingDelete:true}:o));
     } else {
-      setOrders(prev=>prev.map(o=>o.rowId===rowId?{...o,status}:o));
+      setOrders(prev=>prev.map(o=>o.rowId===rowId?{...o,status,pendingDelete:false}:o));
     }
+    await callScript({action:"updateStatus",rowId,status});
+  }
+
+  async function confirmDelete(rowId){
+    setOrders(prev=>prev.filter(o=>o.rowId!==rowId));
   }
 
   function openMapsRoute(){
@@ -175,10 +180,18 @@ function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onC
                 <div style={{fontSize:12,color:B,fontWeight:600}}>{o.pkg} — ₪{o.total}</div>
                 {o.address&&<div style={{fontSize:11,color:MUT}}>📍 {o.address}</div>}
               </div>
-              <select value={o.status||"חדשה"} onChange={e=>updateStatus(o.rowId,e.target.value)}
-                style={{background:STATUS_COLORS[o.status]||B,color:W,border:"none",borderRadius:8,padding:"5px 10px",fontSize:12,cursor:"pointer",fontFamily:"'Heebo',sans-serif"}}>
-                {ORDER_STATUSES.map(s=><option key={s} value={s} style={{background:W,color:TXT}}>{s}</option>)}
-              </select>
+              <div style={{display:"flex",flexDirection:"column",gap:6,alignItems:"flex-end"}}>
+                <select value={o.status||"חדשה"} onChange={e=>updateStatus(o.rowId,e.target.value)}
+                  style={{background:STATUS_COLORS[o.status]||B,color:W,border:"none",borderRadius:8,padding:"5px 10px",fontSize:12,cursor:"pointer",fontFamily:"'Heebo',sans-serif"}}>
+                  {ORDER_STATUSES.map(s=><option key={s} value={s} style={{background:W,color:TXT}}>{s}</option>)}
+                </select>
+                {o.pendingDelete&&(
+                  <button onClick={()=>confirmDelete(o.rowId)}
+                    style={{background:"#C62828",color:W,border:"none",borderRadius:7,padding:"5px 12px",fontSize:12,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
+                    ✓ בצע ומחק
+                  </button>
+                )}
+              </div>
             </div>
           </div>))}
         </div>)}
@@ -355,7 +368,7 @@ export default function OpaLanding(){
             style={{background:isSel?B+15:BBG,border:`2px solid ${isSel?B:BL+"40"}`,borderRadius:10,padding:"10px 10px",cursor:"pointer",textAlign:"center",transition:"all 0.2s"}}>
             <div style={{fontSize:16,marginBottom:2}}>{p.emoji}</div>
             <div style={{fontSize:12,fontWeight:700,color:isSel?BD:TXT}}>{p.name}</div>
-            <div style={{fontSize:11,color:MUT}}>{p.custom?"4+ ארגזים":`${p.boxes} ארגז${p.boxes>1?"ים":""}|${p.plates}צ`}</div>
+            <div style={{fontSize:11,color:MUT}}>{p.custom?"4+ ארגזים":`${p.boxes} ארגז${p.boxes>1?"ים":""}|${p.plates} צלחות`}</div>
             <div style={{fontSize:13,fontWeight:800,color:isSel?BD:B}}>{p.custom?`₪${customBoxes*240}`:`₪${p.price}`}</div>
             {!p.custom&&<div style={{fontSize:10,color:MUT}}>₪{Math.round(p.price/p.boxes)}/ארגז</div>}
             {(p.freeShip||p.custom)&&<div style={{fontSize:9,color:GREEN,fontWeight:600}}>🎁 משלוח חינם</div>}
@@ -577,7 +590,7 @@ export default function OpaLanding(){
           {!isFreeShip&&!isCustom&&(<div style={{background:BBG,borderRadius:12,padding:14,marginBottom:16,border:`1px solid ${BL}40`}}>
             <div style={{fontSize:13,fontWeight:600,color:BD,marginBottom:10}}>🚚 אפשרות אספקה:</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-              {[["delivery","🚚","משלוח (+₪30)"],["pickup","🤝","איסוף עצמי (חינם)"]].map(([val,icon,label])=>(<div key={val} onClick={()=>setDeliveryType(val)} style={{background:deliveryType===val?B:BBG2,color:deliveryType===val?W:TXT,border:`2px solid ${deliveryType===val?B:BL+"40"}`,borderRadius:9,padding:"10px",textAlign:"center",cursor:"pointer",fontSize:13,fontWeight:deliveryType===val?700:400}}>{icon} {label}</div>))}
+              {[["delivery","🚚","משלוח עד הבית (בין חדרה-באר שבע) (+₪30)"],["pickup","🤝","איסוף עצמי (חינם)"]].map(([val,icon,label])=>(<div key={val} onClick={()=>setDeliveryType(val)} style={{background:deliveryType===val?B:BBG2,color:deliveryType===val?W:TXT,border:`2px solid ${deliveryType===val?B:BL+"40"}`,borderRadius:9,padding:"10px",textAlign:"center",cursor:"pointer",fontSize:13,fontWeight:deliveryType===val?700:400}}>{icon} {label}</div>))}
             </div>
             {deliveryType==="pickup"&&(<div style={{marginTop:10}}>
               <select value={selectedPickupLocation} onChange={e=>setSelectedPickupLocation(e.target.value)} style={{width:"100%",background:W,border:`1.5px solid ${errors.pickup?RED:BL}`,borderRadius:9,padding:"10px 13px",color:selectedPickupLocation?TXT:MUT,fontSize:14,fontFamily:"'Heebo',sans-serif",direction:"rtl",marginTop:6}}>
