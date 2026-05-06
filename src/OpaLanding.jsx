@@ -62,11 +62,18 @@ function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onC
 
   async function loadOrders(){
     setLoading(true);
-    const data=await fetchScript({action:"getOrders"});
-    if(Array.isArray(data)){
-      const active=data.filter(o=>!["שולמה ונמסרה","בוטלה"].includes(o.status));
-      setOrders(active);
-      calcStats(data); // stats on all data including completed
+    try {
+      const data=await fetchScript({action:"getOrders"});
+      if(Array.isArray(data)){
+        const active=data.filter(o=>!["שולמה ונמסרה","בוטלה"].includes(String(o.status||"")));
+        setOrders(active);
+        try { calcStats(data); } catch {}
+      } else {
+        setOrders([]);
+      }
+    } catch(err) {
+      console.error("loadOrders error:", err);
+      setOrders([]);
     }
     setLoading(false);
   }
@@ -169,17 +176,21 @@ function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onC
             <button onClick={sendTestEmail} style={{background:"#1565C0",color:W,border:"none",borderRadius:7,padding:"6px 12px",fontSize:12,cursor:"pointer",fontWeight:600}}>📨 שלח מייל בדיקה</button>
           </div>
           {loading?<div style={{textAlign:"center",padding:30,color:MUT}}>טוען...</div>:
-          orders.length===0?<div style={{textAlign:"center",padding:30,color:MUT}}>אין הזמנות עדיין</div>:
-          orders.map((o,i)=>(<div key={i} style={{background:BBG,borderRadius:10,padding:12,marginBottom:10,border:`2px solid ${STATUS_COLORS[o.status]||B}30`}}>
+          orders.length===0?<div style={{textAlign:"center",padding:30,color:MUT}}>אין הזמנות פתוחות</div>:
+          orders.map((o,i)=>{
+            try {
+            const phone=String(o.phone||"");
+            const eventDate=(()=>{try{if(!o.date)return"";const d=new Date(o.date);return isNaN(d)?"":d.toLocaleDateString("he-IL")}catch{return""}})();
+            return (<div key={i} style={{background:BBG,borderRadius:10,padding:12,marginBottom:10,border:`2px solid ${STATUS_COLORS[String(o.status||"")]||B}30`}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}}>
               <div>
                 <div style={{fontWeight:700,color:TXT,fontSize:15}}>{o.name} <span style={{fontSize:11,color:MUT}}>#{o.rowId}</span></div>
                 <div style={{fontSize:13,color:MUT,marginTop:2}}>{o.email}</div>
                 <div style={{display:"flex",gap:8,marginTop:6,flexWrap:"wrap"}}>
-                  <a href={`tel:${o.phone||""}`} style={{display:"inline-flex",alignItems:"center",gap:4,background:"#E8F4FD",border:"1px solid #42A5F5",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#1565C0",textDecoration:"none",fontWeight:600}}>📞 {o.phone}</a>
-                  <a href={`https://wa.me/972${(o.phone||"").replace(/^0/,"")}`} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#E8F5E9",border:"1px solid #4CAF50",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#2E7D32",textDecoration:"none",fontWeight:600}}>💬 וואטסאפ</a>
+                  <a href={`tel:${phone}`} style={{display:"inline-flex",alignItems:"center",gap:4,background:"#E8F4FD",border:"1px solid #42A5F5",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#1565C0",textDecoration:"none",fontWeight:600}}>📞 {o.phone}</a>
+                  <a href={`https://wa.me/972${phone.replace(/^0/,"")}`} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#E8F5E9",border:"1px solid #4CAF50",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#2E7D32",textDecoration:"none",fontWeight:600}}>💬 וואטסאפ</a>
                 </div>
-                <div style={{fontSize:13,color:MUT,marginTop:6}}>{o.event}{o.date?` | ${(()=>{try{const d=new Date(o.date);return isNaN(d)?String(o.date):d.toLocaleDateString("he-IL")}catch{return String(o.date)}})()}`:""}</div>
+                <div style={{fontSize:13,color:MUT,marginTop:6}}>{o.event}{eventDate?` | ${eventDate}`:""}</div>
                 <div style={{fontSize:14,color:B,fontWeight:700,marginTop:4}}>{o.pkg} — ₪{o.total}</div>
                 {o.address&&<div style={{fontSize:12,color:MUT,marginTop:2}}>📍 {o.address}</div>}
               </div>
@@ -197,7 +208,9 @@ function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onC
                 {ORDER_STATUSES.map(s=><option key={s} value={s} style={{background:W,color:TXT}}>{s}</option>)}
               </select>
             </div>
-          </div>))}
+          </div>);
+            } catch(e) { return <div key={i} style={{background:"#ffe",borderRadius:8,padding:8,marginBottom:8,fontSize:12,color:"red"}}>שגיאה בהצגת הזמנה #{i+1}</div>; }
+          })}
         </div>)}
 
         {/* STATS */}
