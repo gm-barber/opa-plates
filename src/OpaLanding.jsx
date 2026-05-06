@@ -312,12 +312,21 @@ export default function OpaLanding() {
   async function saveToSheets(data) {
     if (APPS_SCRIPT_URL==="YOUR_APPS_SCRIPT_URL_HERE") return;
     try {
-      await fetch(APPS_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(data)
+      const p = new URLSearchParams({
+        action: "saveOrder",
+        name: data.name || "",
+        phone: data.phone || "",
+        email: data.email || "",
+        event: data.event || "",
+        date: data.date || "",
+        pkg: data.pkg || "",
+        total: String(data.total || ""),
+        delivery: data.delivery || "",
+        address: data.address || "",
+        consent: data.consent ? "כן" : "לא"
       });
+      const img = new Image();
+      img.src = APPS_SCRIPT_URL + "?" + p.toString();
     } catch {}
   }
 
