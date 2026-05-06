@@ -173,11 +173,15 @@ function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onC
           orders.map((o,i)=>(<div key={i} style={{background:BBG,borderRadius:10,padding:12,marginBottom:10,border:`2px solid ${STATUS_COLORS[o.status]||B}30`}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}}>
               <div>
-                <div style={{fontWeight:700,color:TXT}}>{o.name} <span style={{fontSize:11,color:MUT}}>#{o.rowId}</span></div>
-                <div style={{fontSize:12,color:MUT}}>{o.phone} | {o.email}</div>
-                <div style={{fontSize:12,color:MUT}}>{o.event}{o.date?` | ${o.date}`:""}</div>
-                <div style={{fontSize:12,color:B,fontWeight:600}}>{o.pkg} — ₪{o.total}</div>
-                {o.address&&<div style={{fontSize:11,color:MUT}}>📍 {o.address}</div>}
+                <div style={{fontWeight:700,color:TXT,fontSize:15}}>{o.name} <span style={{fontSize:11,color:MUT}}>#{o.rowId}</span></div>
+                <div style={{fontSize:13,color:MUT,marginTop:2}}>{o.email}</div>
+                <div style={{display:"flex",gap:8,marginTop:6,flexWrap:"wrap"}}>
+                  <a href={`tel:${o.phone}`} style={{display:"inline-flex",alignItems:"center",gap:4,background:"#E8F4FD",border:"1px solid #42A5F5",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#1565C0",textDecoration:"none",fontWeight:600}}>📞 {o.phone}</a>
+                  <a href={`https://wa.me/972${o.phone.replace(/^0/,"")}`} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#E8F5E9",border:"1px solid #4CAF50",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#2E7D32",textDecoration:"none",fontWeight:600}}>💬 וואטסאפ</a>
+                </div>
+                <div style={{fontSize:13,color:MUT,marginTop:6}}>{o.event}{o.date?` | ${o.date.includes("T")?new Date(o.date).toLocaleDateString("he-IL"):o.date}`:""}</div>
+                <div style={{fontSize:14,color:B,fontWeight:700,marginTop:4}}>{o.pkg} — ₪{o.total}</div>
+                {o.address&&<div style={{fontSize:12,color:MUT,marginTop:2}}>📍 {o.address}</div>}
               </div>
               <select value={o.status||"חדשה"}
                 onChange={e=>{
