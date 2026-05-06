@@ -312,6 +312,11 @@ export default function OpaLanding(){
             <div style={{fontSize:12,fontWeight:700,color:isSel?BD:TXT}}>{p.name}</div>
             <div style={{fontSize:11,color:MUT}}>{p.custom?"4+ ארגזים":`${p.boxes} ארגז${p.boxes>1?"ים":""}|${p.plates}צ`}</div>
             <div style={{fontSize:13,fontWeight:800,color:isSel?BD:B}}>{p.custom?`₪${customBoxes*240}`:`₪${p.price}`}</div>
+            {!p.custom&&<div style={{fontSize:10,color:MUT}}>₪{Math.round(p.price/p.boxes)}/ארגז</div>}
+            {(p.freeShip||p.custom)&&<div style={{fontSize:9,color:GREEN,fontWeight:600}}>🎁 משלוח חינם</div>}
+            {!p.custom&&<div style={{fontSize:10,color:MUT}}>₪{Math.round(p.price/p.boxes)}/ארגז</div>}
+            {p.freeShip&&<div style={{fontSize:9,color:GREEN,fontWeight:600}}>🎁 משלוח חינם</div>}
+            {p.custom&&<div style={{fontSize:9,color:GREEN,fontWeight:600}}>🎁 משלוח חינם</div>}
           </div>);
         })}
       </div>
@@ -452,8 +457,8 @@ export default function OpaLanding(){
               {p.badge&&<div style={{position:"absolute",top:-10,right:"50%",transform:"translateX(50%)",background:p.freeShip?GREEN:B,color:W,fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:20,whiteSpace:"nowrap"}}>{p.badge}</div>}
               <div style={{fontSize:26,marginBottom:6}}>{p.emoji}</div>
               <div style={{fontFamily:"'Cinzel',serif",fontSize:14,fontWeight:700,color:isSel?BD:TXT,marginBottom:2}}>{p.name}</div>
-              <div style={{fontSize:11,color:MUT,marginBottom:8}}>{p.custom?"4+ ארגזים":`${p.boxes} ${p.boxes===1?"ארגז":"ארגזים"} | ${p.plates} צלחות`}</div>
-              {p.custom?(<div><div style={{fontSize:11,color:MUT,textDecoration:"line-through"}}>₪{p.origPrice}/ארגז</div><div style={{fontSize:22,fontWeight:800,color:B}}>₪{p.price}<span style={{fontSize:11}}>/ארגז</span></div>{disc&&<div style={{fontSize:10,background:GREEN,color:W,borderRadius:10,padding:"2px 8px",display:"inline-block",marginTop:3}}>{disc}% הנחה</div>}</div>):(<div>{p.origPrice!==p.price&&<div style={{fontSize:11,color:MUT,textDecoration:"line-through"}}>₪{p.origPrice}</div>}<div style={{fontSize:24,fontWeight:800,color:B}}>₪{p.price}</div>{disc&&<div style={{fontSize:10,background:GREEN,color:W,borderRadius:10,padding:"2px 8px",display:"inline-block",marginTop:3}}>{disc}% הנחה</div>}</div>)}
+              <div style={{fontSize:11,color:MUT,marginBottom:6}}>{p.custom?"4+ ארגזים | לחץ לבחירה":`${p.boxes} ${p.boxes===1?"ארגז":"ארגזים"} | ${p.plates} צלחות`}</div>
+              {p.custom?(<div><div style={{fontSize:11,color:MUT,textDecoration:"line-through"}}>₪{p.origPrice}/ארגז</div><div style={{fontSize:22,fontWeight:800,color:B}}>₪{p.price}<span style={{fontSize:11}}>/ארגז</span></div>{disc&&<div style={{fontSize:10,background:GREEN,color:W,borderRadius:10,padding:"2px 8px",display:"inline-block",marginTop:3}}>{disc}% הנחה</div>}<div style={{fontSize:10,color:GREEN,fontWeight:600,marginTop:3}}>🎁 משלוח חינם</div></div>):(<div>{p.origPrice!==p.price&&<div style={{fontSize:11,color:MUT,textDecoration:"line-through"}}>₪{p.origPrice}</div>}<div style={{fontSize:24,fontWeight:800,color:B}}>₪{p.price}</div><div style={{fontSize:10,color:MUT,marginTop:2}}>₪{Math.round(p.price/p.boxes)}/ארגז</div>{disc&&<div style={{fontSize:10,background:GREEN,color:W,borderRadius:10,padding:"2px 8px",display:"inline-block",marginTop:3}}>{disc}% הנחה</div>}</div>)}
             </div>);
           })}
         </div>
@@ -512,13 +517,13 @@ export default function OpaLanding(){
         <div style={{textAlign:"center",marginBottom:28}}>
           <div style={{fontSize:11,letterSpacing:5,color:B,marginBottom:10}}>ORDER NOW</div>
           <h2 style={{fontFamily:"'Cinzel',serif",fontSize:"clamp(20px,5vw,30px)",color:BD,marginBottom:6}}>הזמינו עכשיו</h2>
-          <div style={{fontSize:13,color:MUT}}>מלאו את הטופס ונצור אתכם קשר בהקדם</div>
+          <div style={{fontSize:15,color:MUT}}>מלאו את הטופס ונצור אתכם קשר בהקדם</div>
         </div>
 
         {submitted?(<div style={{background:W,border:`2px solid ${B}`,borderRadius:20,padding:40,textAlign:"center"}}>
           <div style={{fontSize:52,marginBottom:12}}>🎉</div>
           <h3 style={{fontFamily:"'Cinzel',serif",color:BD,fontSize:22,marginBottom:8}}>!OPA</h3>
-          <div style={{color:TXT,fontSize:14,lineHeight:1.9}}>ההזמנה שלכם התקבלה!<br/><span style={{color:MUT,fontSize:12}}>ניצור אתכם קשר בשעות הפעילות תוך שעה לאישור ההזמנה</span></div>
+          <div style={{color:TXT,fontSize:17,lineHeight:2,fontWeight:600}}>ההזמנה שלכם התקבלה! 🎉<br/><span style={{color:MUT,fontSize:14,fontWeight:400}}>ניצור קשר ביום העסקים הקרוב לתיאום משלוח</span></div>
           <button onClick={()=>setSubmitted(false)} style={{marginTop:16,background:"none",border:`1px solid ${B}`,color:B,borderRadius:50,padding:"8px 22px",cursor:"pointer",fontSize:13}}>הזמנה נוספת</button>
         </div>):(
         <div style={{background:W,borderRadius:20,padding:"28px 22px",border:`1px solid ${BL}40`,boxShadow:"0 4px 20px rgba(21,101,192,0.08)"}}>
@@ -541,24 +546,24 @@ export default function OpaLanding(){
           {/* Summary */}
           <div style={{background:BBG,borderRadius:12,padding:"10px 14px",marginBottom:16,display:"flex",justifyContent:"space-between",alignItems:"center",border:`1px solid ${BL}40`}}>
             <div><div style={{fontSize:12,color:MUT}}>סה"כ לתשלום</div><div style={{fontSize:11,color:MUT}}>{getDeliveryStr()}</div></div>
-            <div style={{fontSize:24,fontWeight:800,color:B}}>₪{getTotal()}</div>
+            <div style={{fontSize:28,fontWeight:800,color:B}}>₪{getTotal()}</div>
           </div>
 
           {[{label:"שם מלא *",key:"name",type:"text",placeholder:"ישראל ישראלי"},{label:"טלפון *",key:"phone",type:"tel",placeholder:"050-0000000"},{label:"כתובת מייל *",key:"email",type:"email",placeholder:"israel@email.com"}].map(f=>(<div key={f.key} style={{marginBottom:13}}>
-            <label style={{fontSize:12,color:MUT,display:"block",marginBottom:5}}>{f.label}</label>
-            <input type={f.type} value={form[f.key]} placeholder={f.placeholder} onChange={e=>setForm(p=>({...p,[f.key]:e.target.value}))} style={{width:"100%",background:"#F8FBFF",border:`1.5px solid ${errors[f.key]?RED:BL+"60"}`,borderRadius:9,padding:"10px 13px",color:TXT,fontSize:14,fontFamily:"'Heebo',sans-serif",direction:"rtl"}}/>
+            <label style={{fontSize:14,color:MUT,display:"block",marginBottom:6}}>{f.label}</label>
+            <input type={f.type} value={form[f.key]} placeholder={f.placeholder} onChange={e=>setForm(p=>({...p,[f.key]:e.target.value}))} style={{width:"100%",background:"#F8FBFF",border:`1.5px solid ${errors[f.key]?RED:BL+"60"}`,borderRadius:9,padding:"10px 13px",color:TXT,fontSize:15,fontFamily:"'Heebo',sans-serif",direction:"rtl"}}/>
             {errors[f.key]&&<div style={{fontSize:11,color:RED,marginTop:3}}>{errors[f.key]}</div>}
           </div>))}
 
           {(!isFreeShip&&deliveryType==="delivery")||(isFreeShip)?(<div style={{marginBottom:13}}>
-            <label style={{fontSize:12,color:MUT,display:"block",marginBottom:5}}>{!isFreeShip&&deliveryType==="delivery"?"כתובת למשלוח *":"כתובת למשלוח"}</label>
-            <input type="text" value={form.address} placeholder="רחוב, עיר" onChange={e=>setForm(p=>({...p,address:e.target.value}))} style={{width:"100%",background:"#F8FBFF",border:`1.5px solid ${errors.address?RED:BL+"60"}`,borderRadius:9,padding:"10px 13px",color:TXT,fontSize:14,fontFamily:"'Heebo',sans-serif",direction:"rtl"}}/>
+            <label style={{fontSize:14,color:MUT,display:"block",marginBottom:6}}>{!isFreeShip&&deliveryType==="delivery"?"כתובת למשלוח *":"כתובת למשלוח"}</label>
+            <input type="text" value={form.address} placeholder="רחוב, עיר" onChange={e=>setForm(p=>({...p,address:e.target.value}))} style={{width:"100%",background:"#F8FBFF",border:`1.5px solid ${errors.address?RED:BL+"60"}`,borderRadius:9,padding:"10px 13px",color:TXT,fontSize:15,fontFamily:"'Heebo',sans-serif",direction:"rtl"}}/>
             {errors.address&&<div style={{fontSize:11,color:RED,marginTop:3}}>{errors.address}</div>}
           </div>):null}
 
           <div style={{marginBottom:13}}>
-            <label style={{fontSize:12,color:MUT,display:"block",marginBottom:5}}>סוג אירוע *</label>
-            <select value={form.event} onChange={e=>setForm(p=>({...p,event:e.target.value}))} style={{width:"100%",background:"#F8FBFF",border:`1.5px solid ${errors.event?RED:BL+"60"}`,borderRadius:9,padding:"10px 13px",color:form.event?TXT:MUT,fontSize:14,fontFamily:"'Heebo',sans-serif",direction:"rtl"}}>
+            <label style={{fontSize:14,color:MUT,display:"block",marginBottom:6}}>סוג אירוע *</label>
+            <select value={form.event} onChange={e=>setForm(p=>({...p,event:e.target.value}))} style={{width:"100%",background:"#F8FBFF",border:`1.5px solid ${errors.event?RED:BL+"60"}`,borderRadius:9,padding:"10px 13px",color:form.event?TXT:MUT,fontSize:15,fontFamily:"'Heebo',sans-serif",direction:"rtl"}}>
               <option value="" disabled>בחר...</option>
               {EVENT_TYPES.map(e=><option key={e} value={e}>{e}</option>)}
             </select>
@@ -566,26 +571,26 @@ export default function OpaLanding(){
           </div>
 
           <div style={{marginBottom:13}}>
-            <label style={{fontSize:12,color:MUT,display:"block",marginBottom:5}}>תאריך האירוע</label>
+            <label style={{fontSize:14,color:MUT,display:"block",marginBottom:6}}>תאריך האירוע</label>
             <input type="date" value={form.date} onChange={e=>setForm(p=>({...p,date:e.target.value}))} style={{width:"100%",background:"#F8FBFF",border:`1.5px solid ${BL}60`,borderRadius:9,padding:"10px 13px",color:TXT,fontSize:14,fontFamily:"'Heebo',sans-serif"}}/>
           </div>
 
           <div style={{marginBottom:18}}>
-            <label style={{fontSize:12,color:MUT,display:"block",marginBottom:5}}>הערות</label>
+            <label style={{fontSize:14,color:MUT,display:"block",marginBottom:6}}>הערות</label>
             <textarea value={form.notes} onChange={e=>setForm(p=>({...p,notes:e.target.value}))} rows={2} placeholder="שאלות, בקשות מיוחדות..." style={{width:"100%",background:"#F8FBFF",border:`1.5px solid ${BL}60`,borderRadius:9,padding:"10px 13px",color:TXT,fontSize:14,fontFamily:"'Heebo',sans-serif",resize:"vertical",direction:"rtl"}}/>
           </div>
 
           <div style={{background:BBG,borderRadius:10,padding:"12px 14px",marginBottom:18,border:`1px solid ${BL}30`}}>
             <label style={{display:"flex",gap:10,alignItems:"flex-start",cursor:"pointer"}}>
               <input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} style={{width:18,height:18,marginTop:2,cursor:"pointer",accentColor:B,flexShrink:0}}/>
-              <span style={{fontSize:12,color:MUT,lineHeight:1.7}}>אני מסכים/ה שפרטיי ישמשו לקבלת הטבות ומבצעים ממוכר זה בלבד</span>
+              <span style={{fontSize:14,color:MUT,lineHeight:1.8}}>אני מסכים/ה שפרטיי ישמשו לקבלת הטבות ומבצעים ממוכר זה בלבד</span>
             </label>
           </div>
 
           <button onClick={handleSubmit} className="btn-main" style={{width:"100%",background:B,color:W,border:"none",borderRadius:12,padding:15,fontSize:16,fontWeight:700,cursor:"pointer",fontFamily:"'Heebo',sans-serif",transition:"all 0.2s"}}>
             ✅ שליחת הזמנה
           </button>
-          <div style={{textAlign:"center",fontSize:11,color:MUT,marginTop:8}}>ניצור אתכם קשר בשעות הפעילות תוך שעה לאישור ההזמנה</div>
+          <div style={{textAlign:"center",fontSize:13,color:MUT,marginTop:8}}>ניצור קשר ביום העסקים הקרוב לתיאום משלוח</div>
         </div>)}
       </div>
     </div>
