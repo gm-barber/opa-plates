@@ -326,15 +326,7 @@ export default function OpaLanding() {
         consent: data.consent ? "כן" : "לא"
       });
       const url = APPS_SCRIPT_URL + "?" + p.toString();
-      if (navigator.sendBeacon) {
-        navigator.sendBeacon(url);
-      } else {
-        const img = document.createElement("img");
-        img.style.display = "none";
-        document.body.appendChild(img);
-        img.src = url;
-        setTimeout(() => document.body.removeChild(img), 5000);
-      }
+      await fetch(url, { method: "GET", mode: "no-cors" });
     } catch {}
   }
 
