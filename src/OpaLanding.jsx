@@ -149,7 +149,7 @@ function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onC
   const TABS=[{id:"orders",label:"📋 הזמנות"},{id:"stats",label:"📊 סטטיסטיקות"},{id:"products",label:"📦 מוצרים"},{id:"pickup",label:"📍 איסוף"}];
 
   return(<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.65)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:12}}>
-    <div style={{background:W,borderRadius:16,width:"100%",maxWidth:560,maxHeight:"92vh",overflow:"hidden",display:"flex",flexDirection:"column",direction:"rtl"}}>
+    <div style={{background:W,width:"100%",height:"100%",overflow:"hidden",display:"flex",flexDirection:"column",direction:"rtl"}}>
       <div style={{padding:"14px 18px",borderBottom:`1px solid ${BBG2}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <div style={{fontSize:17,fontWeight:700,color:BD}}>⚙️ פאנל ניהול</div>
         <button onClick={onClose} style={{background:"none",border:"none",fontSize:22,cursor:"pointer",color:MUT}}>✕</button>
@@ -177,7 +177,7 @@ function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onC
                 <div style={{fontSize:13,color:MUT,marginTop:2}}>{o.email}</div>
                 <div style={{display:"flex",gap:8,marginTop:6,flexWrap:"wrap"}}>
                   <a href={`tel:${o.phone}`} style={{display:"inline-flex",alignItems:"center",gap:4,background:"#E8F4FD",border:"1px solid #42A5F5",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#1565C0",textDecoration:"none",fontWeight:600}}>📞 {o.phone}</a>
-                  <a href={`https://wa.me/972${o.phone.replace(/^0/,"")}`} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#E8F5E9",border:"1px solid #4CAF50",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#2E7D32",textDecoration:"none",fontWeight:600}}>💬 וואטסאפ</a>
+                  <a href={`https://wa.me/972${(o.phone||"").replace(/^0/,"")}`} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#E8F5E9",border:"1px solid #4CAF50",borderRadius:20,padding:"4px 12px",fontSize:13,color:"#2E7D32",textDecoration:"none",fontWeight:600}}>💬 וואטסאפ</a>
                 </div>
                 <div style={{fontSize:13,color:MUT,marginTop:6}}>{o.event}{o.date?` | ${o.date.includes("T")?new Date(o.date).toLocaleDateString("he-IL"):o.date}`:""}</div>
                 <div style={{fontSize:14,color:B,fontWeight:700,marginTop:4}}>{o.pkg} — ₪{o.total}</div>
