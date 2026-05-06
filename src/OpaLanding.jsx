@@ -16,8 +16,8 @@ const DEFAULT_PRODUCTS=[
 ];
 const EVENT_TYPES=["בר מצווה","בת מצווה","חתונה","אירוסין","מסיבת יום הולדת","מסיבת רווקות / רווקים","אירוע חברה","מסיבה פרטית","אחר"];
 const DEFAULT_PICKUP=["הרצליה","מודיעין","שדרות","צור משה"];
-const ORDER_STATUSES=["חדשה","שולמה","נמסרה","בוטלה"];
-const STATUS_COLORS={"חדשה":"#1565C0","שולמה":"#2E7D32","נמסרה":"#555","בוטלה":"#C62828"};
+const ORDER_STATUSES=["חדשה","שולמה ונמסרה","בוטלה"];
+const STATUS_COLORS={"חדשה":"#1565C0","שולמה ונמסרה":"#2E7D32","בוטלה":"#C62828"};
 
 function GreekBorder(){
   return(<svg width="100%" height="16" viewBox="0 0 400 16" preserveAspectRatio="xMidYMid meet" style={{display:"block"}}>
@@ -82,8 +82,12 @@ function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onC
   }
 
   async function updateStatus(rowId,status){
-    setOrders(prev=>prev.map(o=>o.rowId===rowId?{...o,status}:o));
     await callScript({action:"updateStatus",rowId,status});
+    if(status==="שולמה ונמסרה"||status==="בוטלה"){
+      setOrders(prev=>prev.filter(o=>o.rowId!==rowId));
+    } else {
+      setOrders(prev=>prev.map(o=>o.rowId===rowId?{...o,status}:o));
+    }
   }
 
   function openMapsRoute(){
