@@ -38,9 +38,16 @@ async function callScript(params){
 async function fetchScript(params){
   try{
     const p=new URLSearchParams(params);
-    const res=await fetch(APPS_SCRIPT_URL+"?"+p.toString());
-    return await res.json();
-  }catch{return null;}
+    const res=await fetch(APPS_SCRIPT_URL+"?"+p.toString(),{
+      method:"GET",
+      redirect:"follow"
+    });
+    const text=await res.text();
+    return JSON.parse(text);
+  }catch(err){
+    console.error("fetchScript error:",err);
+    return null;
+  }
 }
 
 function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onClose}){
@@ -94,6 +101,38 @@ function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onC
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="הזמנות_opa.csv";a.click();
   }
 
+  function exportMarketing(){
+    const consented=orders.filter(o=>o.consent==="כן");
+    if(!consented.length){alert("אין לקוחות שאישרו פרסומים");return;}
+    const h=["שם","טלפון","מייל","אירוע","תאריך אירוע"];
+    const rows=consented.map(o=>[o.name,o.phone,o.email,o.event,o.date]);
+    const csv=[h,...rows].map(r=>r.map(v=>`"${v||""}"`).join(",")).join("\n");
+    const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="לקוחות_פרסום_opa.csv";a.click();
+  }
+
+  async function sendTestEmail(){
+    if(!confirm("לשלוח מייל בדיקה עכשיו?"))return;
+    await callScript({action:"sendDigestNow"});
+    alert("המייל נשלח! בדוק את תיבת הדואר שלך תוך דקה.");
+  }
+
+  function exportMarketing(){
+    const consented=orders.filter(o=>o.consent==="כן");
+    if(!consented.length){alert("אין לקוחות שאישרו פרסומים");return;}
+    const h=["שם","טלפון","מייל","אירוע","תאריך אירוע"];
+    const rows=consented.map(o=>[o.name,o.phone,o.email,o.event,o.date]);
+    const csv=[h,...rows].map(r=>r.map(v=>`"${v||""}"`).join(",")).join("\n");
+    const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="לקוחות_פרסום_opa.csv";a.click();
+  }
+
+  async function sendTestEmail(){
+    if(!confirm("לשלוח מייל בדיקה עכשיו?"))return;
+    await callScript({action:"sendDigestNow"});
+    alert("המייל נשלח! בדוק את תיבת הדואר שלך.");
+  }
+
   function startEdit(p){setEditing(p.id);setForm({...p});}
   function saveEdit(){setProducts(prev=>prev.map(p=>p.id===editing?{...form,price:Number(form.price),origPrice:Number(form.origPrice),boxes:form.boxes?Number(form.boxes):null,plates:form.plates?Number(form.plates):null}:p));setEditing(null);}
   function addProduct(){const p={id:`p_${Date.now()}`,name:"מוצר חדש",boxes:1,plates:35,price:280,origPrice:280,badge:null,emoji:"📦",highlight:false,freeShip:false};setProducts(prev=>[...prev,p]);setEditing(p.id);setForm(p);}
@@ -116,8 +155,10 @@ function AdminPanel({products,setProducts,pickupLocations,setPickupLocations,onC
         {tab==="orders"&&(<div>
           <div style={{display:"flex",gap:8,marginBottom:14,flexWrap:"wrap"}}>
             <button onClick={loadOrders} style={{background:BBG,border:`1px solid ${BL}`,borderRadius:7,padding:"6px 12px",fontSize:12,cursor:"pointer",color:B}}>🔄 רענן</button>
-            <button onClick={exportCSV} style={{background:GREEN,color:W,border:"none",borderRadius:7,padding:"6px 12px",fontSize:12,cursor:"pointer",fontWeight:600}}>⬇️ Excel</button>
+            <button onClick={exportCSV} style={{background:GREEN,color:W,border:"none",borderRadius:7,padding:"6px 12px",fontSize:12,cursor:"pointer",fontWeight:600}}>⬇️ כל ההזמנות</button>
+            <button onClick={exportMarketing} style={{background:"#7B1FA2",color:W,border:"none",borderRadius:7,padding:"6px 12px",fontSize:12,cursor:"pointer",fontWeight:600}}>📧 לקוחות לפרסום</button>
             <button onClick={openMapsRoute} style={{background:"#E65100",color:W,border:"none",borderRadius:7,padding:"6px 12px",fontSize:12,cursor:"pointer",fontWeight:600}}>🗺️ מסלול משלוח</button>
+            <button onClick={sendTestEmail} style={{background:"#1565C0",color:W,border:"none",borderRadius:7,padding:"6px 12px",fontSize:12,cursor:"pointer",fontWeight:600}}>📨 שלח מייל בדיקה</button>
           </div>
           {loading?<div style={{textAlign:"center",padding:30,color:MUT}}>טוען...</div>:
           orders.length===0?<div style={{textAlign:"center",padding:30,color:MUT}}>אין הזמנות עדיין</div>:
@@ -453,7 +494,7 @@ export default function OpaLanding(){
           {products.map(p=>{
             const disc=getDiscount(p);const isSel=selectedId===p.id;
             return(<div key={p.id} className="card" onClick={()=>{if(p.custom)setShowCustomModal(true);else{setSelectedId(p.id);scrollToOrder();}}} style={{background:isSel?`linear-gradient(135deg,${BBG},${BBG2})`:BBG,border:`2px solid ${isSel?B:p.highlight?BL+"80":"rgba(21,101,192,0.15)"}`,borderRadius:16,padding:"18px 14px",cursor:"pointer",textAlign:"center",position:"relative",boxShadow:isSel?`0 4px 20px rgba(21,101,192,0.2)`:"none",transition:"all 0.25s"}}>
-              {p.highlight&&<div style={{position:"absolute",top:-10,left:12,background:RED,color:W,fontSize:9,fontWeight:700,padding:"3px 10px",borderRadius:20}}>הכי נמכר ⭐</div>}
+              {p.highlight&&<div style={{marginTop:6,background:RED,color:W,fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:20,display:"inline-block"}}>הכי נמכר ⭐</div>}
               {p.badge&&<div style={{position:"absolute",top:-10,right:"50%",transform:"translateX(50%)",background:p.freeShip?GREEN:B,color:W,fontSize:10,fontWeight:700,padding:"3px 10px",borderRadius:20,whiteSpace:"nowrap"}}>{p.badge}</div>}
               <div style={{fontSize:26,marginBottom:6}}>{p.emoji}</div>
               <div style={{fontFamily:"'Cinzel',serif",fontSize:14,fontWeight:700,color:isSel?BD:TXT,marginBottom:2}}>{p.name}</div>
